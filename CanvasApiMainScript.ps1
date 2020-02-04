@@ -131,7 +131,7 @@ foreach($x in $xyz)
 }
 
 $tempCSV = Import-Csv Accounts.csv -Header "SIS ID","Name","workflow_state","parent_account_id","root_account_id","uuid","default_storage_quota_mb","default_user_storage_quota_mb","default_group_storage_quota_mb","default_time_zone" | select -skip 1 | sort 'SIS ID','Name' -Unique
-$tempCSV | Export-CSV School.csv -NoTypeInformation 
+$tempCSV | Export-CSV school.csv -NoTypeInformation 
 
 write-host "creating Sync.csv file"
 #courses details
@@ -173,7 +173,7 @@ foreach ($order1 in $OrdersA){
     $matched = $false
     foreach ($order2 in $courses)
     {
-         $obj = "" | select "SIS ID","course_id","Section Name","start_at","end_at","created_at","restrict_enrollments_to_section_dates","nonxlist_course_id","sis_section_id","sis_course_id","integration_id","sis_import_id","School SIS ID"
+         $obj = "" | select "SIS ID","course_id","Section Name","Term StartDate","Term EndDate","created_at","restrict_enrollments_to_section_dates","nonxlist_course_id","sis_section_id","sis_course_id","integration_id","sis_import_id","School SIS ID"
         if(($order1.'course_id' -replace "A" ) -eq $order2.'id' )
         {
             $matchCounter++
@@ -181,8 +181,8 @@ foreach ($order1 in $OrdersA){
             $obj.'SIS ID' = $order1. 'id'
             $obj.'course_id' = $order1.'course_id'
             $obj.'Section Name' = $order1.'name'
-            $obj.'start_at' = $order1.'start_at'
-            $obj.'end_at' = $order1.'end_at'
+            $obj.'Term StartDate' = $order1.'start_at'
+            $obj.'Term EndDate' = $order1.'end_at'
             $obj.'created_at' = $order1.'created_at'
             $obj.'restrict_enrollments_to_section_dates' = $order1.'restrict_enrollments_to_section_dates'
             $obj.'nonxlist_course_id' = $order1.'nonxlist_course_id'
@@ -193,7 +193,7 @@ foreach ($order1 in $OrdersA){
             $obj.'School SIS ID' = $order2.'account_id'
                        
             Write-Host "Match Found Orders " "$matchCounter"
-            $obj | Export-Csv -Path Section.csv -Append -NoTypeInformation
+            $obj | Export-Csv -Path section.csv -Append -NoTypeInformation
         }
     }
 }
@@ -214,8 +214,7 @@ foreach($s in $secid)
 
 $matchcounter = 0
 $user= import-csv users.csv
-$Section = import-csv Section.csv
-
+$Section = import-csv section.csv
 foreach ($order1 in $user){
     $matched = $false
     foreach ($order2 in $Section)
@@ -252,9 +251,9 @@ foreach ($order1 in $user){
     }
 }
 
-Import-Csv -Path 'usernew.csv' | ? role -eq 'StudentEnrollment' | select 'Section SIS ID', 'SIS ID' | sort 'Section SIS ID', 'SIS ID' | Export-Csv StudentEnrollment.csv -NoTypeInformation
+Import-Csv -Path 'usernew.csv' | ? role -eq 'StudentEnrollment' | select 'Section SIS ID', 'SIS ID' | sort 'Section SIS ID', 'SIS ID' | Export-Csv studentEnrollment.csv -NoTypeInformation
 
-Import-Csv -Path 'usernew.csv' | ? role -eq 'TeacherEnrollment' | select 'Section SIS ID', 'SIS ID' | sort 'Section SIS ID', 'SIS ID' | Export-Csv Teacherroster.csv -NoTypeInformation
+Import-Csv -Path 'usernew.csv' | ? role -eq 'TeacherEnrollment' | select 'Section SIS ID', 'SIS ID' | sort 'Section SIS ID', 'SIS ID' | Export-Csv teacherroster.csv -NoTypeInformation
 
 
 $results = Get-CanvasApiResult -Uri "/api/v1/accounts/1/users" -Method GET
@@ -299,9 +298,9 @@ foreach ($order1 in $Fulluser){
     }
 }
 
-Import-Csv -Path 'usersall.csv' | ? role -eq 'StudentEnrollment' | sort 'SIS ID', 'School SIS ID' -Unique | Export-Csv Student.csv -NoTypeInformation
+Import-Csv -Path 'usersall.csv' | ? role -eq 'StudentEnrollment' | sort 'SIS ID', 'School SIS ID' -Unique | Export-Csv student.csv -NoTypeInformation
 
-Import-Csv -Path 'usersall.csv' | ? role -eq 'TeacherEnrollment' | sort 'SIS ID', 'School SIS ID' -Unique | Export-Csv Teacher.csv -NoTypeInformation
+Import-Csv -Path 'usersall.csv' | ? role -eq 'TeacherEnrollment' | sort 'SIS ID', 'School SIS ID' -Unique | Export-Csv teacher.csv -NoTypeInformation
 
 <#
 #if you want details with courses run below script
@@ -416,8 +415,8 @@ Import-Csv -Path 'student0.csv'| sort 'SIS ID' -Unique | Export-Csv Student10.cs
 Import-Csv -Path 'Teacher0.csv' | select 'Section SIS ID', 'SIS ID' | sort 'Section SIS ID', 'SIS ID' -Unique | Export-Csv StudentEnrollment1.csv -NoTypeInformation
 
 Import-Csv -Path 'student0.csv' | select 'Section SIS ID', 'SIS ID' | sort 'Section SIS ID', 'SIS ID' -Unique | Export-Csv Teacherroster1.csv -NoTypeInformation
-
 #>
+
 remove-item Accounts.csv
 remove-item sectionTemp.csv
 remove-item Fulluser.csv
